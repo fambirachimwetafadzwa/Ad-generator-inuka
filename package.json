@@ -1,0 +1,12 @@
+{
+  "name": "syncpos",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev:pos": "npm run dev -w @syncpos/pos",
+    "dev:bo": "npm run dev -w @syncpos/back-office",
+    "build": "npm run build -w @syncpos/pos && npm run build -w @syncpos/back-office",
+    "typecheck": "npm run typecheck -w @syncpos/pos && npm run typecheck -w @syncpos/back-office"
+  }
+}
