@@ -1,3 +1,4 @@
+import { Logo } from '@syncpos/shared';
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { Audit, CashUps, Inventory, StockTake } from './Stock';
 import { Departments, Employees, Hardware, Products, Stores } from './Catalog';
@@ -15,7 +16,7 @@ export default function App() {
   return (
     <div className="shell">
       <aside className="side">
-        <div className="logo">Sync<b>POS</b> <span style={{ fontSize: 12, opacity: .6 }}>Back Office</span></div>
+        <div className="logo"><Logo size={22} suffix="Back Office" /></div>
         {nav.map(([g, items]) => (
           <div key={g}><div className="grp">{g}</div>
             {items.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => (isActive ? 'active' : '')}>{label}</NavLink>)}
@@ -23,7 +24,7 @@ export default function App() {
         ))}
       </aside>
       <div className="main">
-        <div className="head"><div className="sp" /><span className="muted">Tendai Moyo · <span className="badge">administrator</span></span><button className="btn sm">Sign out</button></div>
+        <div className="head"><div className="sp" /><span className="muted" style={{ display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ width: 34, height: 34, borderRadius: 11, background: 'var(--brand-soft)', color: 'var(--brand)', display: 'grid', placeItems: 'center', fontWeight: 800 }}>T</span>Tendai Moyo · <span className="badge">administrator</span></span><button className="btn sm">Sign out</button></div>
         <div className="content">
           <Routes>
             <Route path="/" element={<Dashboard />} /><Route path="/reports" element={<Reports />} />

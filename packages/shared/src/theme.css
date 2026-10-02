@@ -1,9 +1,11 @@
+/* SyncPOS shared theme (dark). Brand colours live in these tokens. */
 :root {
-  --bg: #f4f6fb; --surface: #fff; --surface-2: #eef1f8; --border: #dde2ee;
-  --text: #0f172a; --muted: #64748b;
-  --brand: #4f46e5; --brand-dark: #3730a3; --brand-soft: #e0e7ff;
-  --ok: #16a34a; --warn: #d97706; --danger: #dc2626;
-  --radius: 12px; --shadow: 0 1px 3px rgba(15,23,42,.08), 0 4px 14px rgba(15,23,42,.05);
+  --bg: #0f1117; --surface: #181b25; --surface-2: #212534; --border: #2a2f42;
+  --text: #f3f4f9; --muted: #8a90a8;
+  --brand: #ff6a4d; --brand-dark: #e8512f; --brand-soft: rgba(255,106,77,.14); --brand-2: #ffa04d; --on-brand: #1a0d08;
+  --ok: #34d399; --warn: #fbbf24; --danger: #f87171;
+  --radius: 16px; --shadow: 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 * { box-sizing: border-box; }
@@ -11,21 +13,26 @@ html, body, #root { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--text); font-size: 15px; }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-.btn { border: 1px solid var(--border); background: var(--surface); padding: 10px 16px; border-radius: 10px; font-weight: 600; transition: .12s; }
-.btn:hover { background: var(--surface-2); }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn { border: 1px solid var(--border); background: var(--surface-2); color: var(--text); padding: 10px 16px; border-radius: 12px; font-weight: 600; transition: .12s; }
+.btn:hover { background: #2b3045; }
 .btn:active { transform: scale(.98); }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
-.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
-.btn.primary:hover { background: var(--brand-dark); }
-.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border: 0; color: var(--on-brand); box-shadow: 0 6px 18px rgba(255,106,77,.3); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.primary:disabled { box-shadow: none; filter: grayscale(.6); }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: var(--on-brand); }
 .btn.ghost { background: transparent; border-color: transparent; }
-.btn.sm { padding: 6px 10px; font-size: 13px; }
+.btn.sm { padding: 6px 12px; font-size: 13px; }
 .btn.lg { padding: 16px 22px; font-size: 18px; }
-.input, select.input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; }
+.input, select.input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); color: var(--text); }
+.input::placeholder { color: var(--muted); }
 .input:focus { outline: 2px solid var(--brand-soft); border-color: var(--brand); }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--surface-2); color: var(--muted); }
-.badge.ok { background: #dcfce7; color: #166534; } .badge.warn { background: #fef3c7; color: #92400e; } .badge.danger { background: #fee2e2; color: #991b1b; }
+.badge.ok { background: rgba(52,211,153,.14); color: var(--ok); }
+.badge.warn { background: rgba(251,191,36,.14); color: var(--warn); }
+.badge.danger { background: rgba(248,113,113,.14); color: var(--danger); }
 .muted { color: var(--muted); }
 .logo { font-weight: 800; letter-spacing: -.5px; font-size: 22px; }
 .logo b { color: var(--brand); }

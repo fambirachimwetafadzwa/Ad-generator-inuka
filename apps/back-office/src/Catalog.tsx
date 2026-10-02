@@ -29,7 +29,7 @@ export function Departments() {
         { head: '', cell: r => <Actions onEdit={() => setEditing(r)} /> },
       ]} />
       {editing && <FormModal title={editing === 'new' ? 'New department' : 'Edit department'} fields={fields}
-        initial={editing === 'new' ? { color: '#4f46e5' } : str(editing)} onClose={() => setEditing(null)}
+        initial={editing === 'new' ? { color: '#ff6a4d' } : str(editing)} onClose={() => setEditing(null)}
         onSave={v => save({ id: editing === 'new' ? uid('d') : editing.id, name: v.name, color: v.color, active: editing === 'new' ? true : editing.active })} />}
     </>
   );
