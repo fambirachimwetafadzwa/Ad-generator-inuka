@@ -11,12 +11,12 @@ export const terminals: Terminal[] = [
   { id: 'T-003', storeId: 's2', name: 'Till 1', active: true },
 ];
 export const departments: Department[] = [
-  { id: 'd1', name: 'Beverages', color: '#0ea5e9', active: true },
-  { id: 'd2', name: 'Bakery', color: '#f59e0b', active: true },
-  { id: 'd3', name: 'Groceries', color: '#22c55e', active: true },
-  { id: 'd4', name: 'Snacks', color: '#ec4899', active: true },
-  { id: 'd5', name: 'Household', color: '#8b5cf6', active: true },
-  { id: 'd6', name: 'Dairy', color: '#14b8a6', active: true },
+  { id: 'd1', name: 'Beverages', color: '#0ea5e9', icon: '🥤', active: true },
+  { id: 'd2', name: 'Bakery', color: '#f59e0b', icon: '🥐', active: true },
+  { id: 'd3', name: 'Groceries', color: '#22c55e', icon: '🛒', active: true },
+  { id: 'd4', name: 'Snacks', color: '#ec4899', icon: '🍿', active: true },
+  { id: 'd5', name: 'Household', color: '#8b5cf6', icon: '🧼', active: true },
+  { id: 'd6', name: 'Dairy', color: '#14b8a6', icon: '🥛', active: true },
 ];
 const p = (id: number, name: string, emoji: string, departmentId: string, price: number, cost: number, stock: number): Product => ({
   id: `p${id}`, sku: `SKU-${String(1000 + id)}`, barcode: `600${String(1000000 + id * 137)}`,

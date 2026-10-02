@@ -3,10 +3,12 @@ import { dateTime, money, paymentMethods, round2, stores, terminals, type Employ
 import { Login } from './Login';
 import { ManagerAuth, Modal, Payment, totalsOf, type PaymentResult } from './Modals';
 import { Sell } from './Sell';
+import { Icon, Mark } from './Brand';
 
 const TERMINAL_ID = 'T-001';
 interface Shift { float: number; start: string; cashSales: number; otherSales: number; count: number; payouts: number }
 interface Done { number: string; date: string; lines: OrderLine[]; pay: PaymentResult; cashier: string }
+type View = 'sell' | 'history';
 type Overlay = null | 'payment' | 'cashup' | { void: string };
 
 export default function App() {
@@ -18,6 +20,8 @@ export default function App() {
   const [seq, setSeq] = useState(10050);
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [receipt, setReceipt] = useState<Done | null>(null);
+  const [done, setDone] = useState<Done[]>([]);
+  const [view, setView] = useState<View>('sell');
   const [online, setOnline] = useState(true);
   const [pending, setPending] = useState(0);
   const [toast, setToast] = useState('');
@@ -33,37 +37,51 @@ export default function App() {
   }, [online, pending]);
 
   const orderNo = `INV-${seq}`;
-  const logout = () => { setUser(null); setShift(null); setLines([]); };
+  const logout = () => { setUser(null); setShift(null); setLines([]); setDone([]); setView('sell'); };
 
   const complete = (pay: PaymentResult) => {
     const { total } = totalsOf(lines);
-    setReceipt({ number: orderNo, date: new Date().toISOString(), lines, pay, cashier: user!.name });
+    const sale: Done = { number: orderNo, date: new Date().toISOString(), lines, pay, cashier: user!.name };
+    setReceipt(sale); setDone(d => [sale, ...d]);
     setShift(s => s && ({ ...s, count: s.count + 1, cashSales: s.cashSales + (pay.method === 'cash' ? total : 0), otherSales: s.otherSales + (pay.method === 'cash' ? 0 : total) }));
     if (!online) setPending(n => n + 1);
     setSeq(n => n + 1); setLines([]); setOverlay(null);
   };
   const removeLine = (id: string) => { setLines(ls => ls.filter(l => l.productId !== id)); setOverlay(null); };
 
-  if (!user) return <div className="pos"><Login terminalId={TERMINAL_ID} onLogin={setUser} /></div>;
+  if (!user) return <div style={{ minHeight: '100%', display: 'grid' }}><Login terminalId={TERMINAL_ID} onLogin={setUser} /></div>;
 
+  const title = !shift ? 'Open shift' : view === 'history' ? 'Order history' : store.name;
   return (
     <div className="pos">
-      <div className="topbar">
-        <div className="logo">Sync<b>POS</b></div>
-        <div className="meta"><b>{store.name}</b><br />{terminal.name} · {terminal.id}</div>
-        <div className="spacer" />
-        <button className="btn sm" onClick={() => setOnline(o => !o)} title="Toggle simulated connectivity">
-          <span className={`dot ${online ? '' : 'off'}`} />{online ? 'Online' : `Offline${pending ? ` · ${pending} queued` : ''}`}
-        </button>
-        <span className="badge ok">🖨 Printer ready</span>
-        <div className="meta" style={{ textAlign: 'right' }}>{now.toLocaleTimeString('en-GB', { timeStyle: 'short' })}<br />{user.name} ({user.role})</div>
-        {shift && <button className="btn sm" onClick={() => setOverlay('cashup')}>End shift</button>}
-        <button className="btn sm" onClick={logout}>Log out</button>
-      </div>
+      <nav className="rail" aria-label="Main">
+        <Mark size={44} />
+        <button className={`nav ${view === 'sell' ? 'active' : ''}`} onClick={() => setView('sell')}>{Icon.sell}Sell</button>
+        <button className={`nav ${view === 'history' ? 'active' : ''}`} disabled={!shift} onClick={() => setView('history')}>{Icon.history}Orders</button>
+        <button className="nav" disabled={!shift} onClick={() => setOverlay('cashup')}>{Icon.cashup}Cash-up</button>
+        <div className="sp" />
+        <button className="nav" onClick={logout}>{Icon.logout}Log out</button>
+      </nav>
 
-      {!shift ? <OpenShift onOpen={f => setShift({ float: f, start: new Date().toISOString(), cashSales: 0, otherSales: 0, count: 0, payouts: 0 })} />
-        : <Sell user={user} lines={lines} orderNo={orderNo} setLines={setLines} onCheckout={() => setOverlay('payment')}
-            onClear={() => setLines([])} onVoid={id => (user.role === 'cashier' ? setOverlay({ void: id }) : removeLine(id))} />}
+      <div className="workspace">
+        <header className="topbar">
+          <div>
+            <h1>{title}</h1>
+            <div className="meta">{terminal.name} · {terminal.id} · {now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}, {now.toLocaleTimeString('en-GB', { timeStyle: 'short' })}</div>
+          </div>
+          <div className="spacer" />
+          <button className="chip" onClick={() => setOnline(o => !o)} title="Toggle simulated connectivity">
+            <span className={`dot ${online ? '' : 'off'}`} />{online ? 'Online' : `Offline${pending ? ` · ${pending} queued` : ''}`}
+          </button>
+          <span className="chip">🖨 Printer ready</span>
+          <div className="who"><span className="avatar">{user.name[0]}</span><span>{user.name}<small>{user.role}</small></span></div>
+        </header>
+
+        {!shift ? <OpenShift onOpen={f => setShift({ float: f, start: new Date().toISOString(), cashSales: 0, otherSales: 0, count: 0, payouts: 0 })} />
+          : view === 'history' ? <History sales={done} storeName={store.name} onOpen={setReceipt} />
+          : <Sell user={user} lines={lines} orderNo={orderNo} setLines={setLines} onCheckout={() => setOverlay('payment')}
+              onClear={() => setLines([])} onVoid={id => (user.role === 'cashier' ? setOverlay({ void: id }) : removeLine(id))} />}
+      </div>
 
       {overlay === 'payment' && <Payment total={totalsOf(lines).total} onPaid={complete} onCancel={() => setOverlay(null)} />}
       {overlay && typeof overlay === 'object' && (
@@ -73,7 +91,22 @@ export default function App() {
       {overlay === 'cashup' && shift && <CashUp shift={shift} onCancel={() => setOverlay(null)}
         onSubmit={() => { setOverlay(null); setToast('Cash-up submitted'); logout(); }} />}
       {receipt && <ReceiptModal r={receipt} storeName={store.name} terminal={terminal.id} online={online} onClose={() => setReceipt(null)} />}
-      {toast && <div className="toast">{toast}</div>}
+      {toast && <div className="toast" role="status">{toast}</div>}
+    </div>
+  );
+}
+
+function History({ sales, storeName, onOpen }: { sales: Done[]; storeName: string; onOpen: (d: Done) => void }) {
+  if (!sales.length) return <div className="empty" style={{ flex: 1 }}><div className="big">🧾</div>No orders yet this shift.<br />Completed sales appear here.</div>;
+  return (
+    <div className="history">
+      {sales.map(d => (
+        <div className="hrow" key={d.number}>
+          <div><b>{d.number}</b><small>{dateTime(d.date)} · {storeName}</small></div>
+          <span className="badge">{paymentMethods.find(m => m.id === d.pay.method)?.name}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}><b>{money(totalsOf(d.lines).total)}</b><button className="btn sm" onClick={() => onOpen(d)}>View receipt</button></div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -81,7 +114,7 @@ export default function App() {
 function OpenShift({ onOpen }: { onOpen: (float: number) => void }) {
   const [f, setF] = useState('100.00');
   return (
-    <div className="login">
+    <div className="setup">
       <div className="card" style={{ padding: 28, width: 420 }}>
         <h2 style={{ marginTop: 0 }}>Open shift</h2>
         <p className="muted">Count the cash in your drawer and enter the opening float.</p>

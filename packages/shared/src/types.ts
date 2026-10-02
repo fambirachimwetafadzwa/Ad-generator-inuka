@@ -2,7 +2,7 @@ export type Role = 'administrator' | 'manager' | 'cashier';
 
 export interface Store { id: string; name: string; city: string; active: boolean }
 export interface Terminal { id: string; storeId: string; name: string; active: boolean }
-export interface Department { id: string; name: string; color: string; active: boolean }
+export interface Department { id: string; name: string; color: string; icon?: string; active: boolean }
 export interface Product {
   id: string; sku: string; barcode: string; name: string; emoji: string;
   departmentId: string; price: number; cost: number; taxRate: number;

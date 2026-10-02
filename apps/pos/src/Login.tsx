@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { employees, stores, terminals, type Employee } from '@syncpos/shared';
 import { PinPad } from './PinPad';
+import { Logo } from './Brand';
 
 export function Login({ terminalId, onLogin }: { terminalId: string; onLogin: (e: Employee) => void }) {
   const terminal = terminals.find(t => t.id === terminalId)!;
@@ -13,19 +14,19 @@ export function Login({ terminalId, onLogin }: { terminalId: string; onLogin: (e
     <div className="login">
       <div className="card login-card">
         <div className="left">
-          <div className="logo">Sync<b>POS</b></div>
+          <Logo size={26} />
           <div>
-            <h2 style={{ margin: 0 }}>{store.name}</h2>
+            <h2 style={{ margin: 0, fontSize: 28 }}>{store.name}</h2>
             <div style={{ opacity: .85 }}>{terminal.name} · {terminal.id}</div>
           </div>
-          <small style={{ opacity: .7 }}>Demo PINs — Manager 1111 · Cashier 2222 / 3333</small>
+          <small style={{ color: 'var(--muted)' }}>Demo PINs — Manager 1111 · Cashier 2222 / 3333</small>
         </div>
         <div className="right">
-          <h3 style={{ marginTop: 0 }}>Who's signing in?</h3>
+          <h2 style={{ marginTop: 0 }}>Welcome back</h2><p className="muted" style={{ marginTop: -6 }}>Choose your name, then enter your PIN.</p>
           <div className="users">
             {staff.map(e => (
               <button key={e.id} className={`user ${sel?.id === e.id ? 'active' : ''}`} onClick={() => { setSel(e); setErr(''); }}>
-                {e.name}<span className="badge">{e.role}</span>
+                <span className="avatar">{e.name[0]}</span><span className="who"><span>{e.name}<small>{e.role}</small></span></span>
               </button>
             ))}
           </div>
